@@ -14,4 +14,5 @@ App(
     # fap_author="J. Doe",
     # fap_weburl="https://github.com/user/fliplock",
     fap_icon_assets="images",  # Image assets to compile for this application
+    sources=["*.c", "!*.clang*", "!*/bin/*"],  # Source files to compile for this application
 )

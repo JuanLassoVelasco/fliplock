@@ -303,13 +303,14 @@ static void app_free(App* app) {
 
 int32_t fliplock_app(void* p) {
     UNUSED(p);
-    DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
-    DialogMessage* message = dialog_message_alloc();
-    dialog_message_set_header(message, "Hello world", 64, 20, AlignCenter, AlignTop);
-    dialog_message_set_text(message, "I'm test_app!", 64, 32, AlignCenter, AlignTop);
-    dialog_message_show(dialogs, message);
-    dialog_message_free(message);
-    furi_record_close(RECORD_DIALOGS);
+    App* app = app_alloc();
+
+    Gui* gui = furi_record_open(RECORD_GUI);
+    view_dispatcher_attach_to_gui(app->view_dispatcher, gui, ViewDispatcherTypeFullscreen);
+    scene_manager_next_scene(app->scene_manager, FlipLockScene_Startup);
+    view_dispatcher_run(app->view_dispatcher);
+
+    app_free(app);
 
     return 0;
 }

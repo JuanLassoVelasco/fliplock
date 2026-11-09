@@ -4,7 +4,9 @@
 #include <gui/modules/file_browser.h>
 #include <mntminput/text_input.h>
 #include <gui/modules/submenu.h>
-#include <gui/modules/variable_item_list.h>
+#include <gui/modules/widget.h>
+#include <gui/modules/loading.h>
+#include <gui/modules/dialog_ex.h>
 #include <gui/scene_manager.h>
 #include <gui/view_dispatcher.h>
 
@@ -14,24 +16,33 @@
 typedef enum {
     FlipLockScene_Startup,
     FlipLockScene_PasswordBrowser,
+    FlipLockScene_NewFolderEntry,
     FlipLockScene_PasswordEntry,
+    FlipLockScene_PasswordEdit,
     FlipLockScene_EnterUsername,
     FlipLockScene_EnterPassword,
+    FlipLockScene_UsernameGeneration,
+    FlipLockScene_PasswordGeneration,
     FlipLockScene_PasswordInfo,
     FlipLockScene_DeleteConfirmation,
-    FlipLockScene_PasswordGenerationSelection,
-    FlipLockScene_GenerateConfirmation,
-    FlipLockScene_SaveChangesConfirmation,
+    FlipLockScene_UsernameGenerationConfirmation,
+    FlipLockScene_PasswordGenerationConfirmation,
+    FlipLockScene_UsernameGenerationResult,
+    FlipLockScene_PasswordGenerationResult,
+    FlipLockScene_UnsavedChanges,
     FlipLockScene_PasswordInjection,
+    FlipLockScene_InjectionProgress,
+    FlipLockScene_InjectionComplete,
     FlipLockSceneCount,
 } FlipLockScene;
 
 typedef enum {
     FlipLockModules_TextInputEditor,
     FlipLockModules_FileBrowser,
-    FlipLockModules_VariableItemList,
     FlipLockModules_Submenu,
     FlipLockModules_Dialog,
+    FlipLockModules_Widget,
+    FlipLockModules_Loading,
 } FlipLockModules;
 
 typedef struct App {
@@ -40,7 +51,9 @@ typedef struct App {
     FileBrowser* file_browser;
     TextInput* text_input;
     Submenu* submenu;
-    VariableItemList* variable_item_list;
+    DialogEx* dialog;
+    Widget* widget;
+    Loading* loading;
 } App;
 
 void fliplock_startup_on_enter(void* context) {
@@ -71,6 +84,20 @@ void fliplock_password_browser_on_exit(void* context) {
     UNUSED(context);
 }
 
+void fliplock_new_folder_entry_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_new_folder_entry_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_new_folder_entry_on_exit(void* context) {
+    UNUSED(context);
+}
+
 void fliplock_password_entry_on_enter(void* context) {
     UNUSED(context);
 }
@@ -82,6 +109,20 @@ bool fliplock_password_entry_on_event(void* context, SceneManagerEvent event) {
 }
 
 void fliplock_password_entry_on_exit(void* context) {
+    UNUSED(context);
+}
+
+void fliplock_password_edit_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_password_edit_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_password_edit_on_exit(void* context) {
     UNUSED(context);
 }
 
@@ -113,6 +154,34 @@ void fliplock_enter_password_on_exit(void* context) {
     UNUSED(context);
 }
 
+void fliplock_username_generation_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_username_generation_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_username_generation_on_exit(void* context) {
+    UNUSED(context);
+}
+
+void fliplock_password_generation_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_password_generation_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_password_generation_on_exit(void* context) {
+    UNUSED(context);
+}
+
 void fliplock_password_info_on_enter(void* context) {
     UNUSED(context);
 }
@@ -141,45 +210,73 @@ void fliplock_delete_confirmation_on_exit(void* context) {
     UNUSED(context);
 }
 
-void fliplock_password_generation_selection_on_enter(void* context) {
+void fliplock_username_generation_confirmation_on_enter(void* context) {
     UNUSED(context);
 }
 
-bool fliplock_password_generation_selection_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_generation_selection_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_generate_confirmation_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_generate_confirmation_on_event(void* context, SceneManagerEvent event) {
+bool fliplock_username_generation_confirmation_on_event(void* context, SceneManagerEvent event) {
     UNUSED(context);
     UNUSED(event);
     return false; // event not handled
 }
 
-void fliplock_generate_confirmation_on_exit(void* context) {
+void fliplock_username_generation_confirmation_on_exit(void* context) {
     UNUSED(context);
 }
 
-void fliplock_save_changes_confirmation_on_enter(void* context) {
+void fliplock_password_generation_confirmation_on_enter(void* context) {
     UNUSED(context);
 }
 
-bool fliplock_save_changes_confirmation_on_event(void* context, SceneManagerEvent event) {
+bool fliplock_password_generation_confirmation_on_event(void* context, SceneManagerEvent event) {
     UNUSED(context);
     UNUSED(event);
     return false; // event not handled
 }
 
-void fliplock_save_changes_confirmation_on_exit(void* context) {
+void fliplock_password_generation_confirmation_on_exit(void* context) {
+    UNUSED(context);
+}
+
+void fliplock_username_generation_result_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_username_generation_result_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_username_generation_result_on_exit(void* context) {
+    UNUSED(context);
+}
+
+void fliplock_password_generation_result_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_password_generation_result_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_password_generation_result_on_exit(void* context) {
+    UNUSED(context);
+}
+
+void fliplock_unsaved_changes_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_unsaved_changes_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_unsaved_changes_on_exit(void* context) {
     UNUSED(context);
 }
 
@@ -197,44 +294,90 @@ void fliplock_password_injection_on_exit(void* context) {
     UNUSED(context);
 }
 
+void fliplock_injection_progress_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_injection_progress_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_injection_progress_on_exit(void* context) {
+    UNUSED(context);
+}
+
+void fliplock_injection_complete_on_enter(void* context) {
+    UNUSED(context);
+}
+
+bool fliplock_injection_complete_on_event(void* context, SceneManagerEvent event) {
+    UNUSED(context);
+    UNUSED(event);
+    return false; // event not handled
+}
+
+void fliplock_injection_complete_on_exit(void* context) {
+    UNUSED(context);
+}
+
 void (*const fliplock_scene_on_enter_handlers[])(void*) = {
     fliplock_startup_on_enter,
     fliplock_password_browser_on_enter,
+    fliplock_new_folder_entry_on_enter,
     fliplock_password_entry_on_enter,
+    fliplock_password_edit_on_enter,
     fliplock_enter_username_on_enter,
     fliplock_enter_password_on_enter,
+    fliplock_username_generation_on_enter,
+    fliplock_password_generation_on_enter,
     fliplock_password_info_on_enter,
     fliplock_delete_confirmation_on_enter,
-    fliplock_password_generation_selection_on_enter,
-    fliplock_generate_confirmation_on_enter,
-    fliplock_save_changes_confirmation_on_enter,
-    fliplock_password_injection_on_enter};
+    fliplock_username_generation_confirmation_on_enter,
+    fliplock_password_generation_confirmation_on_enter,
+    fliplock_unsaved_changes_on_enter,
+    fliplock_password_injection_on_enter,
+    fliplock_injection_progress_on_enter,
+    fliplock_injection_complete_on_enter};
 
 bool (*const fliplock_scene_on_event_handlers[])(void*, SceneManagerEvent) = {
     fliplock_startup_on_event,
     fliplock_password_browser_on_event,
+    fliplock_new_folder_entry_on_event,
     fliplock_password_entry_on_event,
+    fliplock_password_edit_on_event,
     fliplock_enter_username_on_event,
     fliplock_enter_password_on_event,
+    fliplock_username_generation_on_event,
+    fliplock_password_generation_on_event,
     fliplock_password_info_on_event,
     fliplock_delete_confirmation_on_event,
-    fliplock_password_generation_selection_on_event,
-    fliplock_generate_confirmation_on_event,
-    fliplock_save_changes_confirmation_on_event,
-    fliplock_password_injection_on_event};
+    fliplock_username_generation_confirmation_on_event,
+    fliplock_password_generation_confirmation_on_event,
+    fliplock_unsaved_changes_on_event,
+    fliplock_password_injection_on_event,
+    fliplock_injection_progress_on_event,
+    fliplock_injection_complete_on_event};
 
 void (*const fliplock_scene_on_exit_handlers[])(void*) = {
     fliplock_startup_on_exit,
     fliplock_password_browser_on_exit,
+    fliplock_new_folder_entry_on_exit,
     fliplock_password_entry_on_exit,
+    fliplock_password_edit_on_exit,
     fliplock_enter_username_on_exit,
     fliplock_enter_password_on_exit,
+    fliplock_username_generation_on_exit,
+    fliplock_password_generation_on_exit,
     fliplock_password_info_on_exit,
     fliplock_delete_confirmation_on_exit,
-    fliplock_password_generation_selection_on_exit,
-    fliplock_generate_confirmation_on_exit,
-    fliplock_save_changes_confirmation_on_exit,
-    fliplock_password_injection_on_exit};
+    fliplock_username_generation_confirmation_on_exit,
+    fliplock_password_generation_confirmation_on_exit,
+    fliplock_unsaved_changes_on_exit,
+    fliplock_password_injection_on_exit,
+    fliplock_injection_progress_on_exit,
+    fliplock_injection_complete_on_exit};
 
 static const SceneManagerHandlers fliplock_scene_manager_handlers = {
     .on_enter_handlers = fliplock_scene_on_enter_handlers,
@@ -276,11 +419,15 @@ static App* app_alloc() {
     app->submenu = submenu_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, FlipLockModules_Submenu, submenu_get_view(app->submenu));
-    app->variable_item_list = variable_item_list_alloc();
+    app->dialog = dialog_alloc();
     view_dispatcher_add_view(
-        app->view_dispatcher,
-        FlipLockModules_VariableItemList,
-        variable_item_list_get_view(app->variable_item_list));
+        app->view_dispatcher, FlipLockModules_Dialog, dialog_get_view(app->dialog));
+    app->widget = widget_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher, FlipLockModules_Widget, widget_get_view(app->widget));
+    app->loading = loading_alloc();
+    view_dispatcher_add_view(
+        app->view_dispatcher, FlipLockModules_Loading, loading_get_view(app->loading));
 
     return app;
 }
@@ -290,14 +437,17 @@ static void app_free(App* app) {
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_FileBrowser);
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_TextInputEditor);
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Submenu);
-    view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_VariableItemList);
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Dialog);
+    view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Widget);
+    view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Loading);
     view_dispatcher_free(app->view_dispatcher);
     scene_manager_free(app->scene_manager);
     file_browser_free(app->file_browser);
     text_input_free(app->text_input);
     submenu_free(app->submenu);
-    variable_item_list_free(app->variable_item_list);
+    dialog_free(app->dialog);
+    widget_free(app->widget);
+    loading_free(app->loading);
     free(app);
 }
 

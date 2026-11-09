@@ -2,7 +2,7 @@
 
 App(
     appid="fliplock",  # Must be unique
-    name="App fliplock",  # Displayed in menus
+    name="Fliplock",  # Displayed in menus
     apptype=FlipperAppType.EXTERNAL,
     entry_point="fliplock_app",
     stack_size=2 * 1024,

@@ -56,8 +56,27 @@ typedef struct App {
     Loading* loading;
 } App;
 
-void fliplock_startup_on_enter(void* context) {
+void fliplock_startup_button_callback(GuiButtonType result, InputType type, void* context) {
+    UNUSED(result);
+    UNUSED(type);
     UNUSED(context);
+}
+
+void fliplock_startup_on_enter(void* context) {
+    App* app = context;
+
+    widget_reset(app->widget);
+    widget_add_icon_element(app->widget, 0, 10, &I_WarningDolphin_45x42);
+    widget_add_rect_element(app->widget, 62, 6, 58, 20, 4, false);
+    widget_add_string_element(
+        app->widget, 70, 16, AlignLeft, AlignCenter, FontPrimary, "FlipLock!");
+    widget_add_string_element(
+        app->widget, 55, 34, AlignLeft, AlignCenter, FontSecondary, "Virtual Password");
+    widget_add_string_element(
+        app->widget, 70, 46, AlignLeft, AlignCenter, FontSecondary, "Notebook");
+    widget_add_button_element(
+        app->widget, GuiButtonTypeRight, "Browse Passwords", fliplock_startup_button_callback, app);
+    view_dispatcher_switch_to_view(app->view_dispatcher, FlipLockModules_Widget);
 }
 
 bool fliplock_startup_on_event(void* context, SceneManagerEvent event) {
@@ -406,7 +425,7 @@ static App* app_alloc() {
     view_dispatcher_set_custom_event_callback(app->view_dispatcher, fliplock_custom_callback);
     view_dispatcher_set_navigation_event_callback(
         app->view_dispatcher, fliplock_back_event_callback);
-    app->file_browser = file_browser_alloc(APP_DATA_PATH());
+    app->file_browser = file_browser_alloc(furi_string_alloc());
     view_dispatcher_add_view(
         app->view_dispatcher,
         FlipLockModules_FileBrowser,
@@ -419,9 +438,9 @@ static App* app_alloc() {
     app->submenu = submenu_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, FlipLockModules_Submenu, submenu_get_view(app->submenu));
-    app->dialog = dialog_alloc();
+    app->dialog = dialog_ex_alloc();
     view_dispatcher_add_view(
-        app->view_dispatcher, FlipLockModules_Dialog, dialog_get_view(app->dialog));
+        app->view_dispatcher, FlipLockModules_Dialog, dialog_ex_get_view(app->dialog));
     app->widget = widget_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, FlipLockModules_Widget, widget_get_view(app->widget));
@@ -445,7 +464,7 @@ static void app_free(App* app) {
     file_browser_free(app->file_browser);
     text_input_free(app->text_input);
     submenu_free(app->submenu);
-    dialog_free(app->dialog);
+    dialog_ex_free(app->dialog);
     widget_free(app->widget);
     loading_free(app->loading);
     free(app);

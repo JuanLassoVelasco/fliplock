@@ -1,6 +1,6 @@
 #include "text_input.h"
 #include <gui/elements.h>
-#include <assets_icons.h>
+#include <fliplock_icons.h>
 #include <furi.h>
 
 struct TextInput {
@@ -619,6 +619,7 @@ static bool text_input_view_input_callback(InputEvent* event, void* context) {
     return consumed;
 }
 
+/*
 static bool text_input_view_ascii_callback(AsciiEvent* event, void* context) {
     TextInput* text_input = context;
     furi_assert(text_input);
@@ -687,6 +688,8 @@ static bool text_input_view_ascii_callback(AsciiEvent* event, void* context) {
     return false;
 }
 
+*/
+
 void text_input_timer_callback(void* context) {
     furi_assert(context);
     TextInput* text_input = context;
@@ -705,7 +708,7 @@ TextInput* text_input_alloc(void) {
     view_allocate_model(text_input->view, ViewModelTypeLocking, sizeof(TextInputModel));
     view_set_draw_callback(text_input->view, text_input_view_draw_callback);
     view_set_input_callback(text_input->view, text_input_view_input_callback);
-    view_set_ascii_callback(text_input->view, text_input_view_ascii_callback);
+    //    view_set_ascii_callback(text_input->view, text_input_view_ascii_callback);
 
     text_input->timer = furi_timer_alloc(text_input_timer_callback, FuriTimerTypeOnce, text_input);
 

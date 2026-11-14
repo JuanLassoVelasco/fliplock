@@ -12,6 +12,8 @@ extern "C" {
 #define FLIPLOCK_PASSWORD_BROWSER_LABEL_SIZE  64U
 #define FLIPLOCK_PASSWORD_BROWSER_HEADER_SIZE 96U
 
+#define FLIPLOCK_PSWRD_BROWSER_ICON_NONE 0xFFU
+
 typedef enum {
     FlipLockPswrdBrowserItemFolder = 0,
     FlipLockPswrdBrowserItemPassword,

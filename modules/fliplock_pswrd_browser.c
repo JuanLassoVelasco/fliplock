@@ -26,7 +26,7 @@ typedef struct {
 } FlipLockPswrdBrowserItem;
 
 _Static_assert(
-    FlipLockPswrdBrowserItemTypeAdd <= UINT8_MAX,
+    FlipLockPswrdBrowserItemAdd <= UINT8_MAX,
     "FlipLockPswrdBrowserItemType must fit in uint8_t");
 
 typedef struct {
@@ -93,27 +93,27 @@ static uint32_t fliplock_pswrd_browser_action_count(const FlipLockPswrdBrowserMo
 
 static uint32_t fliplock_pswrd_browser_clamp_action_index_for_model(
     const FlipLockPswrdBrowserModel* model,
-   
-   
+    uint32_t index) {
+    const uint32_t action_count = fliplock_pswrd_browser_action_count(model);
     if(action_count > 0U && index < action_count) {
-    return index;
+        return index;
     }
     return 0U;
 }
 
 static bool fliplock_pswrd_browser_selected_is_password(const FlipLockPswrdBrowserModel* model) {
     return model->item_count > 0U && model->selected_index < model->item_count &&
-           model->items[model->selected_index].type == FlipLockPswrdBrowserItemTypePassword;
+           model->items[model->selected_index].type == FlipLockPswrdBrowserItemPassword;
 }
 
 static bool fliplock_pswrd_browser_selected_is_add(const FlipLockPswrdBrowserModel* model) {
     return model->item_count > 0U && model->selected_index < model->item_count &&
-           model->items[model->selected_index].type == FlipLockPswrdBrowserItemTypeAdd;
+           model->items[model->selected_index].type == FlipLockPswrdBrowserItemAdd;
 }
 
 static bool fliplock_pswrd_browser_selected_is_folder(const FlipLockPswrdBrowserModel* model) {
     return model->item_count > 0U && model->selected_index < model->item_count &&
-           model->items[model->selected_index].type == FlipLockPswrdBrowserItemTypeFolder;
+           model->items[model->selected_index].type == FlipLockPswrdBrowserItemFolder;
 }
 
 static bool fliplock_pswrd_browser_selected_is_actionable(const FlipLockPswrdBrowserModel* model) {
@@ -134,13 +134,13 @@ static uint32_t fliplock_pswrd_browser_window_offset(const FlipLockPswrdBrowserM
 }
 
 static bool fliplock_pswrd_browser_icon_needs_file(const FlipLockPswrdBrowserItem* item) {
-    return item->icon_id < FLIPLOCK_PSWRD_BROWSER_ICON_FILE_COUNT &&
-           (item->icon_id == FlipLockPswrdBrowserIconFile ||
-            (item->icon_id == FlipLockPswrdBrowserIconFolder && item->icon_id != 0U));
+    return item->icon_id < FLIPLOCK_PSWRD_BROWSER_ICON_COUNT &&
+           (item->type == FlipLockPswrdBrowserItemPassword ||
+            (item->type == FlipLockPswrdBrowserItemFolder && item->icon_id != 0U));
 }
 
 static const uint8_t*
-    fliplock_pswrd_browser_cache_icon(const FlipLockPswrdBrowserModel* model, uint8_t icon_id) {
+    fliplock_pswrd_browser_cached_icon(const FlipLockPswrdBrowserModel* model, uint8_t icon_id) {
     for(uint32_t slot = 0U; slot < FLIPLOCK_PSWRD_BROWSER_VISIBLE_ROWS; slot++) {
         if(model->items[slot].icon_id == icon_id) {
             return model->icon_xbm[slot];
@@ -156,7 +156,7 @@ static void fliplock_pswrd_browser_draw_item_icon(
     uint8_t x,
     uint8_t y) {
     const uint8_t* xbm = fliplock_pswrd_browser_icon_needs_file(item) ?
-                             fliplock_pswrd_browser_cache_icons(model, item->icon_id) :
+                             fliplock_pswrd_browser_cached_icon(model, item->icon_id) :
                              NULL;
 
     if(xbm) {
@@ -169,13 +169,13 @@ static void fliplock_pswrd_browser_draw_item_icon(
     case FlipLockPswrdBrowserItemFolder:
         canvas_draw_icon(canvas, x, y, &I_dir_10px);
         break;
-    case FlipLockPswrdBrowserItemTypePassword:
+    case FlipLockPswrdBrowserItemPassword:
         canvas_draw_icon(canvas, x, y, &I_C00_Password);
         break;
-    case FlipLockPswrdBrowserItemTypeUp:
+    case FlipLockPswrdBrowserItemUp:
         canvas_draw_icon(canvas, x, y, &I_back_10px);
         break;
-    case FlipLockPswrdBrowserItemTypeAdd:
+    case FlipLockPswrdBrowserItemAdd:
         canvas_draw_icon(canvas, x, y, &I_Add);
         break;
 
@@ -210,21 +210,20 @@ static void
             canvas_set_color(canvas, ColorBlack);
         }
 
-        furi_string_set_str(model->draw_string, model->items[item_index].name);
+        furi_string_set_str(model->draw_string, model->items[item_index].label);
         const FlipLockPswrdBrowserItemType type = model->items[item_index].type;
         uint8_t label_x = 4U;
         uint8_t label_width = show_scrollbar ? 116U : 121U;
 
-        if(type == FlipLockPswrdBrowserItemTypeUp || type == FlipLockPswrdBrowserItemTypeAdd ||
-           type == FlipLockPswrdBrowserItemTypeFolder ||
-           type == FlipLockPswrdBrowserItemTypePassword) {
-            fliplock_pswrd_browser_draw_icon(
+        if(type == FlipLockPswrdBrowserItemUp || type == FlipLockPswrdBrowserItemAdd ||
+           type == FlipLockPswrdBrowserItemFolder || type == FlipLockPswrdBrowserItemPassword) {
+            fliplock_pswrd_browser_draw_item_icon(
                 canvas,
                 model,
                 &model->items[item_index],
                 FLIPLOCK_PSWRD_BROWSER_ICON_X,
                 (uint8_t)y);
-            label_x = FLIPLOCK_PSWRD_BROWSER_ICON_TEXT_X;
+            label_x = FLIPLOCK_PSWRD_BROWSER_ICON_X;
             label_width = show_scrollbar ? 103U : 108U;
         }
 
@@ -234,7 +233,7 @@ static void
             (uint8_t)(y + 9U),
             label_width,
             model->draw_string,
-            is_selected ? model->scroll_count : 0U,
+            is_selected ? model->scroll_counter : 0U,
             true);
     }
 
@@ -276,12 +275,11 @@ static void
     canvas_draw_line(canvas, box_x + 1U, box_y + 12U, box_x + box_w - 2U, box_y + 12U);
 
     canvas_set_font(canvas, FontSecondary);
-    for(int32_t i = 0U; i < fliplock_pswrd_browser_action_count; i++) {
+    for(uint32_t i = 0U; i < fliplock_pswrd_browser_action_count(model); i++) {
         const uint8_t row_y = (uint8_t)(15U + i * 9U);
         const bool is_selected = model->action_selected_index == i;
-        const char* label = pswrd_menu ?
-                                fliplock_pswrd_browser_pswrd_action_labels[i] :
-                                fliplock_pswrd_browser_pswrd_create_action_label(model, i);
+        const char* label = pswrd_menu ? fliplock_pswrd_browser_password_action_labels[i] :
+                                         fliplock_pswrd_browser_create_action_label(model, i);
 
         if(is_selected) {
             canvas_draw_str(canvas, box_x + 4U, row_y + 7U, ">");
@@ -355,18 +353,18 @@ static void fliplock_pswrd_browser_sync_icons(FlipLockPswrdBrowser* browser) {
     const uint32_t offset = fliplock_pswrd_browser_window_offset(model);
 
     for(uint32_t rows = 0;
-        rows < FLIPLOCK_PSWRD_BROWSER_VISIBLE_ROWS && offset + rows < model->items_count;
+        rows < FLIPLOCK_PSWRD_BROWSER_VISIBLE_ROWS && offset + rows < model->item_count;
         rows++) {
         const FlipLockPswrdBrowserItem* item = &model->items[offset + rows];
         if(!fliplock_pswrd_browser_icon_needs_file(item) ||
-           memchr(wanted, item->icon, wanted_count) != NULL) {
+           memchr(wanted, item->icon_id, wanted_count) != NULL) {
             continue;
         }
 
-        wanted[wanted_count++] = item->icon;
+        wanted[wanted_count++] = item->icon_id;
 
-        if(fliplock_pswrd_browser_cached_icon(model, item->icon) == NULL) {
-            missing[missing_count++] = item->icon;
+        if(fliplock_pswrd_browser_cached_icon(model, item->icon_id) == NULL) {
+            missing[missing_count++] = item->icon_id;
         }
     }
 
@@ -423,11 +421,10 @@ static void fliplock_pswrd_browser_sync_icons(FlipLockPswrdBrowser* browser) {
         true);
 }
 
-static void
-    fliplock_pswrd_browser_move_selection(FlipLockPswrdBrowserView* browser, int8_t delta) {
+static void fliplock_pswrd_browser_move_selection(FlipLockPswrdBrowser* browser, int8_t delta) {
     with_view_model(
         browser->view,
-        FlipLockPswrdBrowserViewModel * model,
+        FlipLockPswrdBrowserModel * model,
         {
             if(model->action_menu_open) {
                 const uint32_t action_count = fliplock_pswrd_browser_action_count(model);
@@ -450,7 +447,7 @@ static void
 }
 
 static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* context) {
-    FlipLockPswrdBrowserView* browser = context;
+    FlipLockPswrdBrowser* browser = context;
     bool consumed = false;
 
     furi_assert(browser);
@@ -462,13 +459,13 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
         return true;
     }
 
-    FlipLockPswrdBrowserViewModel* model = view_get_model(browser->view);
+    FlipLockPswrdBrowserModel* model = view_get_model(browser->view);
     const bool action_menu_open = model->action_menu_open;
-    const bool selected_folder = flippass_db_browser_selected_is_folder(model);
-    const bool selected_password = flippass_db_browser_selected_is_password(model);
+    const bool selected_folder = fliplock_pswrd_browser_selected_is_folder(model);
+    const bool selected_password = fliplock_pswrd_browser_selected_is_password(model);
     const bool selected_up = model->item_count > 0U && model->selected_index < model->item_count &&
                              model->items[model->selected_index].type ==
-                                 FlipLockPswrdBrowserItemTypeUp;
+                                 FlipLockPswrdBrowserItemUp;
     const bool selected_add = fliplock_pswrd_browser_selected_is_add(model);
     const bool selected_actionable = fliplock_pswrd_browser_selected_is_actionable(model);
     const bool has_parent = model->has_parent;
@@ -495,7 +492,7 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
         if(event->key == InputKeyBack) {
             with_view_model(
                 browser->view,
-                FlipLockPswrdBrowserViewModel * mutable_model,
+                FlipLockPswrdBrowserModel * mutable_model,
                 { mutable_model->action_menu_open = false; },
                 true);
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventCloseActionMenu);
@@ -585,10 +582,10 @@ FlipLockPswrdBrowser* fliplock_pswrd_browser_alloc(void) {
 
     view_set_context(browser->view, browser);
     view_allocate_model(browser->view, ViewModelTypeLocking, sizeof(FlipLockPswrdBrowserModel));
-    view_set_draw_callback(browser->view, fliplock_pswrd_browser_view_draw_callback);
-    view_set_input_callback(browser->view, fliplock_pswrd_browser_view_input_callback);
-    view_set_enter_callback(browser->view, fliplock_pswrd_browser_view_enter_callback);
-    view_set_exit_callback(browser->view, fliplock_pswrd_browser_view_exit_callback);
+    view_set_draw_callback(browser->view, fliplock_pswrd_browser_draw_callback);
+    view_set_input_callback(browser->view, fliplock_pswrd_browser_input_callback);
+    view_set_enter_callback(browser->view, fliplock_pswrd_browser_enter_callback);
+    view_set_exit_callback(browser->view, fliplock_pswrd_browser_exit_callback);
     with_view_model(
         browser->view,
         FlipLockPswrdBrowserModel * model,
@@ -656,10 +653,9 @@ void fliplock_pswrd_browser_reset(FlipLockPswrdBrowser* browser) {
             model->action_selected_index = 0U;
             model->scroll_counter = 0U;
             model->has_parent = false;
-            model->show_other_action = true;
             model->action_menu_open = false;
             model->mode = FlipLockPswrdBrowserModeBrowse;
-            model->add_menu_type = FlipLockPswrdBrowserAddMenuTypeObject;
+            model->menu_type = FlipLockPswrdBrowserMenuTypeObject;
         },
         true);
 }
@@ -698,10 +694,10 @@ void fliplock_pswrd_browser_set_mode(FlipLockPswrdBrowser* browser, FlipLockPswr
 
 void fliplock_pswrd_browser_set_add_menu_type(
     FlipLockPswrdBrowser* browser,
-    FlipLockPswrdBrowserAddMenuType kind) {
+    FlipLockPswrdBrowserMenuType kind) {
     furi_check(browser);
     with_view_model(
-        browser->view, FlipLockPswrdBrowserModel * model, { model->add_menu_type = kind; }, true);
+        browser->view, FlipLockPswrdBrowserModel * model, { model->menu_type = kind; }, true);
 }
 
 void fliplock_pswrd_browser_add_item(
@@ -715,7 +711,7 @@ void fliplock_pswrd_browser_add_item(
         browser->view,
         FlipLockPswrdBrowserModel * model,
         {
-            if(model->item_count < FLIPLOCK_PSWRD_BROWSER_MAX_ITEMS) {
+            if(model->item_count < FLIPLOCK_PASSWORD_BROWSER_MAX_ITEMS) {
                 FlipLockPswrdBrowserItem* item = &model->items[model->item_count++];
                 item->type = type;
                 item->icon_id = icon_id;
@@ -804,7 +800,7 @@ bool fliplock_pswrd_browser_is_action_menu_open(const FlipLockPswrdBrowser* brow
 
 FlipLockPswrdBrowserItemType
     fliplock_pswrd_browser_get_selected_type(const FlipLockPswrdBrowser* browser) {
-    FlipLockPswrdBrowserItemType type = FlipLockPswrdBrowserItemTypeInfo;
+    FlipLockPswrdBrowserItemType type = FlipLockPswrdBrowserItemAdd;
 
     furi_check(browser);
     with_view_model(

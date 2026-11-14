@@ -1,7 +1,8 @@
+#include "modules/fliplock_pswrd_browser.h"
+
 #include <furi.h>
 #include <dialogs/dialogs.h>
 #include <gui/gui.h>
-#include <gui/modules/file_browser.h>
 #include <mntminput/text_input.h>
 #include <gui/modules/submenu.h>
 #include <gui/modules/widget.h>
@@ -38,7 +39,7 @@ typedef enum {
 
 typedef enum {
     FlipLockModules_TextInputEditor,
-    FlipLockModules_FileBrowser,
+    FlipLockModules_PasswordBrowser,
     FlipLockModules_Submenu,
     FlipLockModules_Dialog,
     FlipLockModules_Widget,
@@ -48,7 +49,7 @@ typedef enum {
 typedef struct App {
     SceneManager* scene_manager;
     ViewDispatcher* view_dispatcher;
-    FileBrowser* file_browser;
+    FlipLockPswrdBrowser* password_browser;
     TextInput* text_input;
     Submenu* submenu;
     DialogEx* dialog;
@@ -110,8 +111,9 @@ void fliplock_startup_on_exit(void* context) {
 
 void fliplock_password_browser_on_enter(void* context) {
     App* app = context;
-    file_browser_start(app->file_browser, furi_string_alloc_set("/apps/fliplock/passwords"));
-    view_dispatcher_switch_to_view(app->view_dispatcher, FlipLockModules_FileBrowser);
+    fliplock_pswrd_browser_reset(app->password_browser);
+
+    view_dispatcher_switch_to_view(app->view_dispatcher, FlipLockModules_PasswordBrowser);
 }
 
 bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) {
@@ -446,11 +448,11 @@ static App* app_alloc() {
     view_dispatcher_set_custom_event_callback(app->view_dispatcher, fliplock_custom_callback);
     view_dispatcher_set_navigation_event_callback(
         app->view_dispatcher, fliplock_back_event_callback);
-    app->file_browser = file_browser_alloc(furi_string_alloc());
+    app->password_browser = fliplock_pswrd_browser_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher,
-        FlipLockModules_FileBrowser,
-        file_browser_get_view(app->file_browser));
+        FlipLockModules_PasswordBrowser,
+        fliplock_pswrd_browser_get_view(app->password_browser));
     app->text_input = text_input_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher,
@@ -474,7 +476,7 @@ static App* app_alloc() {
 
 static void app_free(App* app) {
     furi_assert(app);
-    view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_FileBrowser);
+    view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_PasswordBrowser);
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_TextInputEditor);
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Submenu);
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Dialog);
@@ -482,7 +484,7 @@ static void app_free(App* app) {
     view_dispatcher_remove_view(app->view_dispatcher, FlipLockModules_Loading);
     view_dispatcher_free(app->view_dispatcher);
     scene_manager_free(app->scene_manager);
-    file_browser_free(app->file_browser);
+    fliplock_pswrd_browser_free(app->password_browser);
     text_input_free(app->text_input);
     submenu_free(app->submenu);
     dialog_ex_free(app->dialog);

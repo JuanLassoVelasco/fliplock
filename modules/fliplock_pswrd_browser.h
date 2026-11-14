@@ -80,9 +80,7 @@ void fliplock_pswrd_browser_add_item(
     uint8_t icon_id);
 void fliplock_pswrd_browser_set_selected_item(FlipLockPswrdBrowser* browser, uint32_t index);
 uint32_t fliplock_pswrd_browser_get_selected_item(const FlipLockPswrdBrowser* browser);
-void fliplock_pswrd_browser_set_action_selected(
-    FlipLockPswrdBrowser* browser,
-    FlipLockPswrdBrowserAction action);
+void fliplock_pswrd_browser_set_action_selected(FlipLockPswrdBrowser* browser, uint32_t index);
 uint32_t fliplock_pswrd_browser_get_action_selected(const FlipLockPswrdBrowser* browser);
 void fliplock_pswrd_browser_set_action_menu_open(FlipLockPswrdBrowser* browser, bool is_open);
 bool fliplock_pswrd_browser_is_action_menu_open(const FlipLockPswrdBrowser* browser);

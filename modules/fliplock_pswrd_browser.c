@@ -1,4 +1,5 @@
 #include "fliplock_pswrd_browser.h"
+#include "fliplock_icons.h"
 
 #include <furi.h>
 #include <gui/elements.h>
@@ -81,6 +82,7 @@ static uint32_t fliplock_pswrd_browser_create_action_count(void) {
 static const char* fliplock_pswrd_browser_create_action_label(
     const FlipLockPswrdBrowserModel* model,
     uint32_t index) {
+    UNUSED(model);
     return fliplock_pswrd_browser_create_action_labels[index];
 }
 
@@ -261,7 +263,6 @@ static void
     const uint8_t box_w = 68U;
     const uint8_t box_h = 50U;
     const bool pswrd_menu = fliplock_pswrd_browser_selected_is_password(model);
-    const bool create_menu = fliplock_pswrd_browser_selected_is_add(model);
 
     canvas_set_color(canvas, ColorWhite);
     canvas_draw_box(canvas, box_x - 1U, box_y - 1U, box_w - 2U, box_h - 2U);
@@ -532,8 +533,8 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
                 true);
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventOpenActionMenu);
             consumed = true;
-            break;
         }
+        break;
     case InputKeyBack:
         if(has_parent) {
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventBack);

@@ -56,10 +56,15 @@ typedef struct App {
     Loading* loading;
 } App;
 
+typedef enum {
+    FlipLockStartupViewPasswordsEvent,
+} FlipLockStartupEvent;
+
 void fliplock_startup_button_callback(GuiButtonType result, InputType type, void* context) {
-    UNUSED(result);
-    UNUSED(type);
-    UNUSED(context);
+    App* app = context;
+    if(result == GuiButtonTypeRight && type == InputTypeRelease) {
+        scene_manager_handle_custom_event(app->scene_manager, FlipLockStartupViewPasswordsEvent);
+    }
 }
 
 void fliplock_startup_on_enter(void* context) {
@@ -80,17 +85,33 @@ void fliplock_startup_on_enter(void* context) {
 }
 
 bool fliplock_startup_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
+    App* app = context;
+    bool consumed = false;
+
+    switch(event.type) {
+    case SceneManagerEventTypeCustom:
+        switch(event.event) {
+        case FlipLockStartupViewPasswordsEvent:
+            scene_manager_next_scene(app->scene_manager, FlipLockScene_PasswordBrowser);
+            consumed = true;
+            break;
+        }
+        break;
+    default:
+        break;
+    }
+    return consumed;
 }
 
 void fliplock_startup_on_exit(void* context) {
-    UNUSED(context);
+    App* app = context;
+    widget_reset(app->widget);
 }
 
 void fliplock_password_browser_on_enter(void* context) {
-    UNUSED(context);
+    App* app = context;
+    file_browser_start(app->file_browser, furi_string_alloc_set("/apps/fliplock/passwords"));
+    view_dispatcher_switch_to_view(app->view_dispatcher, FlipLockModules_FileBrowser);
 }
 
 bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) {

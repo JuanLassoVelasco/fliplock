@@ -1,270 +1,25 @@
 #include "fliplock.h"
 #include "scenes/fliplock_startup_scene.h"
+#include "scenes/fliplock_password_browser_scene.h"
+#include "scenes/fliplock_new_folder_entry_scene.h"
+#include "scenes/fliplock_new_password_entry_scene.h"
+#include "scenes/fliplock_password_edit_scene.h"
+#include "scenes/fliplock_enter_username_scene.h"
+#include "scenes/fliplock_enter_password_scene.h"
+#include "scenes/fliplock_username_generation_scene.h"
+#include "scenes/fliplock_password_generation_scene.h"
+#include "scenes/fliplock_password_info_scene.h"
+#include "scenes/fliplock_delete_confirmation_scene.h"
+#include "scenes/fliplock_username_generation_confirmation_scene.h"
+#include "scenes/fliplock_password_generation_confirmation_scene.h"
+#include "scenes/fliplock_username_generation_result_scene.h"
+#include "scenes/fliplock_password_generation_result_scene.h"
+#include "scenes/fliplock_unsaved_changes_scene.h"
+#include "scenes/fliplock_password_injection_scene.h"
+#include "scenes/fliplock_injection_progress_scene.h"
+#include "scenes/fliplock_injection_complete_scene.h"
 
 const char* fliplock_item_label_offset_string = "        ";
-
-void fliplock_password_browser_on_enter(void* context) {
-    App* app = context;
-    fliplock_pswrd_browser_reset(app->password_browser);
-    fliplock_pswrd_browser_add_item(app->password_browser, FlipLockPswrdBrowserItemUp, "", 0U);
-    fliplock_pswrd_browser_add_item(
-        app->password_browser, FlipLockPswrdBrowserItemFolder, "     Test_folder", 2U);
-    fliplock_pswrd_browser_add_item(
-        app->password_browser, FlipLockPswrdBrowserItemPassword, "     Test_password", 3U);
-    fliplock_pswrd_browser_add_item(
-        app->password_browser, FlipLockPswrdBrowserItemAdd, "        Add", 1U);
-
-    view_dispatcher_switch_to_view(app->view_dispatcher, FlipLockModules_PasswordBrowser);
-}
-
-bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_browser_on_exit(void* context) {
-    App* app = context;
-    fliplock_pswrd_browser_reset(app->password_browser);
-}
-
-void fliplock_new_folder_entry_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_new_folder_entry_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_new_folder_entry_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_entry_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_entry_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_entry_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_edit_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_edit_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_edit_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_enter_username_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_enter_username_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_enter_username_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_enter_password_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_enter_password_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_enter_password_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_username_generation_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_username_generation_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_username_generation_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_generation_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_generation_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_generation_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_info_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_info_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_info_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_delete_confirmation_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_delete_confirmation_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_delete_confirmation_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_username_generation_confirmation_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_username_generation_confirmation_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_username_generation_confirmation_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_generation_confirmation_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_generation_confirmation_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_generation_confirmation_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_username_generation_result_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_username_generation_result_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_username_generation_result_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_generation_result_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_generation_result_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_generation_result_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_unsaved_changes_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_unsaved_changes_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_unsaved_changes_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_password_injection_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_password_injection_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_password_injection_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_injection_progress_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_injection_progress_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_injection_progress_on_exit(void* context) {
-    UNUSED(context);
-}
-
-void fliplock_injection_complete_on_enter(void* context) {
-    UNUSED(context);
-}
-
-bool fliplock_injection_complete_on_event(void* context, SceneManagerEvent event) {
-    UNUSED(context);
-    UNUSED(event);
-    return false; // event not handled
-}
-
-void fliplock_injection_complete_on_exit(void* context) {
-    UNUSED(context);
-}
 
 void (*const fliplock_scene_on_enter_handlers[])(void*) = {
     fliplock_startup_on_enter,
@@ -280,6 +35,8 @@ void (*const fliplock_scene_on_enter_handlers[])(void*) = {
     fliplock_delete_confirmation_on_enter,
     fliplock_username_generation_confirmation_on_enter,
     fliplock_password_generation_confirmation_on_enter,
+    fliplock_username_generation_result_on_enter,
+    fliplock_password_generation_result_on_enter,
     fliplock_unsaved_changes_on_enter,
     fliplock_password_injection_on_enter,
     fliplock_injection_progress_on_enter,
@@ -299,6 +56,8 @@ bool (*const fliplock_scene_on_event_handlers[])(void*, SceneManagerEvent) = {
     fliplock_delete_confirmation_on_event,
     fliplock_username_generation_confirmation_on_event,
     fliplock_password_generation_confirmation_on_event,
+    fliplock_username_generation_result_on_event,
+    fliplock_password_generation_result_on_event,
     fliplock_unsaved_changes_on_event,
     fliplock_password_injection_on_event,
     fliplock_injection_progress_on_event,
@@ -318,6 +77,8 @@ void (*const fliplock_scene_on_exit_handlers[])(void*) = {
     fliplock_delete_confirmation_on_exit,
     fliplock_username_generation_confirmation_on_exit,
     fliplock_password_generation_confirmation_on_exit,
+    fliplock_username_generation_result_on_exit,
+    fliplock_password_generation_result_on_exit,
     fliplock_unsaved_changes_on_exit,
     fliplock_password_injection_on_exit,
     fliplock_injection_progress_on_exit,

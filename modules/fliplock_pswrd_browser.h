@@ -46,6 +46,12 @@ typedef enum {
 } FlipLockPswrdBrowserCreateAction;
 
 typedef enum {
+    FlipLockPswrdBrowserFolderActionOpen = 0,
+    FlipLockPswrdBrowserFolderActionDelete,
+    FlipLockPswrdBrowserFolderActionCount,
+} FlipLockPswrdBrowserFolderAction;
+
+typedef enum {
     FlipLockPswrdBrowserEventEnter = 1,
     FlipLockPswrdBrowserEventBack,
     FlipLockPswrdBrowserEventOpenActionMenu,

@@ -135,8 +135,17 @@ static App* app_alloc() {
         app->view_dispatcher, FlipLockModules_Loading, loading_get_view(app->loading));
     app->storage = furi_record_open(RECORD_STORAGE);
     app->storage_file = storage_file_alloc(app->storage);
-    app->root_path = strdup(APP_DATA_PATH(""));
-    app->current_display_path = strdup(app->root_path);
+    app->root_path = furi_string_alloc();
+    furi_string_set(app->root_path, APP_DATA_PATH(""));
+    app->current_display_path = furi_string_alloc();
+    furi_string_set(app->current_display_path, furi_string_get_cstr(app->root_path));
+    app->at_root_path = true;
+    app->current_password_label = NULL;
+    app->new_password_label_buffer = NULL;
+    app->new_password_username_buffer = NULL;
+    app->new_password_buffer = NULL;
+    app->new_folder_label_buffer = NULL;
+    app->folder_delete_label_buffer = NULL;
 
     return app;
 }
@@ -159,8 +168,27 @@ static void app_free(App* app) {
     loading_free(app->loading);
     storage_file_free(app->storage_file);
     furi_record_close(RECORD_STORAGE);
-    free(app->root_path);
-    free(app->current_display_path);
+    furi_string_free(app->root_path);
+    furi_string_free(app->current_display_path);
+    if(app->current_password_label) {
+        free(app->current_password_label);
+    }
+    if(app->new_password_label_buffer) {
+        free(app->new_password_label_buffer);
+    }
+    if(app->new_password_username_buffer) {
+        free(app->new_password_username_buffer);
+    }
+    if(app->new_password_buffer) {
+        free(app->new_password_buffer);
+    }
+    if(app->new_folder_label_buffer) {
+        free(app->new_folder_label_buffer);
+    }
+    if(app->folder_delete_label_buffer) {
+        free(app->folder_delete_label_buffer);
+    }
+
     free(app);
 }
 

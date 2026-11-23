@@ -68,6 +68,11 @@ static const char* fliplock_pswrd_browser_create_action_labels[] = {
     "Password",
 };
 
+static const char* fliplock_pswrd_browser_folder_action_labels[] = {
+    "Open",
+    "Delete",
+};
+
 static bool fliplock_pswrd_browser_selected_is_password(const FlipLockPswrdBrowserModel* model);
 static bool fliplock_pswrd_browser_selected_is_add(const FlipLockPswrdBrowserModel* model);
 
@@ -77,13 +82,6 @@ static uint32_t fliplock_pswrd_browser_password_action_count(void) {
 
 static uint32_t fliplock_pswrd_browser_create_action_count(void) {
     return COUNT_OF(fliplock_pswrd_browser_create_action_labels);
-}
-
-static const char* fliplock_pswrd_browser_create_action_label(
-    const FlipLockPswrdBrowserModel* model,
-    uint32_t index) {
-    UNUSED(model);
-    return fliplock_pswrd_browser_create_action_labels[index];
 }
 
 static uint32_t fliplock_pswrd_browser_action_count(const FlipLockPswrdBrowserModel* model) {
@@ -264,6 +262,7 @@ static void
     const uint8_t box_w = 68U;
     const uint8_t box_h = 50U;
     const bool pswrd_menu = fliplock_pswrd_browser_selected_is_password(model);
+    const bool create_menu = fliplock_pswrd_browser_selected_is_add(model);
 
     canvas_set_color(canvas, ColorWhite);
     canvas_draw_box(canvas, box_x - 1U, box_y - 1U, box_w - 2U, box_h - 2U);
@@ -280,8 +279,10 @@ static void
     for(uint32_t i = 0U; i < fliplock_pswrd_browser_action_count(model); i++) {
         const uint8_t row_y = (uint8_t)(15U + i * 9U);
         const bool is_selected = model->action_selected_index == i;
-        const char* label = pswrd_menu ? fliplock_pswrd_browser_password_action_labels[i] :
-                                         fliplock_pswrd_browser_create_action_label(model, i);
+        const char* label = pswrd_menu ?
+                                fliplock_pswrd_browser_password_action_labels[i] :
+                                (create_menu ? fliplock_pswrd_browser_create_action_labels[i] :
+                                               fliplock_pswrd_browser_folder_action_labels[i]);
 
         if(is_selected) {
             canvas_draw_str(canvas, box_x + 4U, row_y + 7U, ">");
@@ -333,8 +334,10 @@ static void fliplock_pswrd_browser_draw_callback(Canvas* canvas, void* _model) {
 static void
     fliplock_pswrd_browser_emit(FlipLockPswrdBrowser* browser, FlipLockPswrdBrowserEvent event) {
     furi_assert(browser);
+    FURI_LOG_D("PSWRD_Browser", "Password Browser event Emit method called");
 
     if(browser->callback != NULL) {
+        FURI_LOG_D("PSWRD_Browser", "Attempting to send emitted event to callback");
         browser->callback(event, browser->callback_context);
     }
 }
@@ -455,9 +458,12 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
     furi_assert(browser);
     furi_assert(event);
 
+    FURI_LOG_D("PSWRD_Browser", "Password Browser input callback called");
+
     if((event->key == InputKeyUp || event->key == InputKeyDown) &&
        (event->type == InputTypeShort || event->type == InputTypeRepeat)) {
         fliplock_pswrd_browser_move_selection(browser, event->key == InputKeyDown ? 1 : -1);
+        FURI_LOG_D("PSWRD_Browser", "Password Browser selection moved");
         return true;
     }
 
@@ -471,11 +477,12 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
     const bool selected_add = fliplock_pswrd_browser_selected_is_add(model);
     const bool selected_actionable = fliplock_pswrd_browser_selected_is_actionable(model);
     const bool has_parent = model->has_parent;
-    const bool is_quick_press = event->type == InputTypeShort;
+    const bool is_long_press = event->type == InputTypeLong;
     view_commit_model(browser->view, false);
 
     if(event->key == InputKeyOk && selected_actionable && !action_menu_open) {
-        if(selected_password || selected_add) {
+        if(selected_password || selected_add || selected_folder) {
+            FURI_LOG_D("PSWRD_Browser", "Opening Action Menu for Item");
             with_view_model(
                 browser->view,
                 FlipLockPswrdBrowserModel * mutable_model,
@@ -487,12 +494,14 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
     }
 
     if(action_menu_open) {
-        if(event->key == InputKeyOk && is_quick_press) {
+        FURI_LOG_D("PSWRD_Browser", "Action menu accessed an input entered");
+        if(event->key == InputKeyOk && is_long_press) {
+            FURI_LOG_D("PSWRD_Browser", "Attempting to emit action selection event");
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventSelectAction);
             return true;
         }
 
-        if(event->key == InputKeyBack && is_quick_press) {
+        if(event->key == InputKeyBack && is_long_press) {
             with_view_model(
                 browser->view,
                 FlipLockPswrdBrowserModel * mutable_model,
@@ -512,19 +521,23 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
 
     switch(event->key) {
     case InputKeyLeft:
-        if(is_quick_press && has_parent) {
+        if(is_long_press && has_parent) {
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventBack);
             consumed = true;
         }
         break;
     case InputKeyOk:
-        if(is_quick_press &&
+        if(is_long_press &&
            (selected_add || selected_password || selected_folder || selected_up)) {
+            FURI_LOG_D("PSWRD_Browser", "Normal enter input event sent");
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventEnter);
             consumed = true;
         }
         break;
     case InputKeyRight:
+        if(!is_long_press) {
+            break;
+        }
         if(selected_folder) {
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventEnter);
             consumed = true;
@@ -539,7 +552,7 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
         }
         break;
     case InputKeyBack:
-        if(is_quick_press && has_parent) {
+        if(is_long_press && has_parent) {
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventBack);
             consumed = true;
         }

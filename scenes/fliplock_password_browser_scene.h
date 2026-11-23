@@ -9,8 +9,9 @@ extern "C" {
 typedef enum {
     FlipLockPasswordBrowserEventEnterFolder = 0,
     FlipLockPasswordBrowserEventGoUpFolder,
-    FlipLockPasswordBrowserEventCreateFolder,
-    FlipLockPasswordBrowserEventCreatePassword,
+    FlipLockPasswordBrowserEventCreateFolderRequest,
+    FlipLockPasswordBrowserEventCreatePasswordRequest,
+    FlipLockPasswordBrowserEventDeleteFolderRequest,
     FlipLockPasswordBrowserEventCount,
 } FlipLockPasswordBrowserEvent;
 

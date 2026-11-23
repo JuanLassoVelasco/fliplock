@@ -1,6 +1,9 @@
 #include "fliplock_startup_scene.h"
 
+#define FLIPLOCK_STARTUP_DEBUG_FLAG "Startup"
+
 void fliplock_startup_button_callback(GuiButtonType result, InputType type, void* context) {
+    FURI_LOG_D(FLIPLOCK_STARTUP_DEBUG_FLAG, "Back event called");
     App* app = context;
     if(result == GuiButtonTypeRight && type == InputTypeRelease) {
         scene_manager_handle_custom_event(app->scene_manager, FlipLockStartupViewPasswordsEvent);

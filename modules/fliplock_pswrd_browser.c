@@ -501,13 +501,16 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
             return true;
         }
 
-        if(event->key == InputKeyBack && is_normal_press) {
-            with_view_model(
-                browser->view,
-                FlipLockPswrdBrowserModel * mutable_model,
-                { mutable_model->action_menu_open = false; },
-                true);
-            fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventCloseActionMenu);
+        if(event->key == InputKeyBack) {
+            if(is_normal_press) {
+                with_view_model(
+                    browser->view,
+                    FlipLockPswrdBrowserModel * mutable_model,
+                    { mutable_model->action_menu_open = false; },
+                    true);
+                fliplock_pswrd_browser_emit(
+                    browser, FlipLockPswrdBrowserEventCloseActionMenu);
+            }
             return true;
         }
 
@@ -515,7 +518,7 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
     }
 
     if(event->key == InputKeyBack && browser->back_filter != NULL &&
-       browser->back_filter(browser->callback_context)) {
+       browser->back_filter(browser->callback_context) && is_normal_press) {
         return true;
     }
 

@@ -91,6 +91,7 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
         break;
     case FlipLockPswrdBrowserEventCloseActionMenu:
         FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Close action menu event called");
+        app->action_menu_just_closed = true;
         break;
     default:
         break;
@@ -167,6 +168,15 @@ bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) 
     char* selected_label = fliplock_pswrd_browser_get_selected_label(app->password_browser);
 
     switch(event.type) {
+    case SceneManagerEventTypeBack:
+        if(fliplock_pswrd_browser_is_action_menu_open(app->password_browser)) {
+            consumed = true;
+        }
+        if(app->action_menu_just_closed) {
+            consumed = true;
+            app->action_menu_just_closed = false;
+        }
+        break;
     case SceneManagerEventTypeCustom:
         switch(event.event) {
         case FlipLockPasswordBrowserEventEnterFolder:
@@ -233,6 +243,7 @@ bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) 
         default:
             break;
         }
+        break;
     default:
         break;
     }

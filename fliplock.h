@@ -80,6 +80,7 @@ typedef struct App {
     char* new_password_buffer;
     char* new_folder_label_buffer;
     char* folder_delete_label_buffer;
+    bool action_menu_just_closed;
 } App;
 
 #ifdef __cplusplus

@@ -146,6 +146,7 @@ static App* app_alloc() {
     app->new_password_buffer = NULL;
     app->new_folder_label_buffer = NULL;
     app->folder_delete_label_buffer = NULL;
+    app->action_menu_just_closed = false;
 
     return app;
 }

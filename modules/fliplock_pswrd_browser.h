@@ -40,6 +40,12 @@ typedef enum {
 } FlipLockPswrdBrowserAction;
 
 typedef enum {
+    FlipLockPswrdBrowserCreateFolder = 0,
+    FlipLockPswrdBrowserCreatePassword,
+    FlipLockPswrdBrowserCreateCount,
+} FlipLockPswrdBrowserCreateAction;
+
+typedef enum {
     FlipLockPswrdBrowserEventEnter = 1,
     FlipLockPswrdBrowserEventBack,
     FlipLockPswrdBrowserEventOpenActionMenu,
@@ -69,6 +75,7 @@ void fliplock_pswrd_browser_set_back_filter(
 void fliplock_pswrd_browser_reset(FlipLockPswrdBrowser* browser);
 void fliplock_pswrd_browser_set_header(FlipLockPswrdBrowser* browser, const char* header);
 void fliplock_pswrd_browser_set_has_parent(FlipLockPswrdBrowser* browser, bool has_parent);
+bool fliplock_pswrd_browser_get_has_parent(const FlipLockPswrdBrowser* browser);
 void fliplock_pswrd_browser_set_mode(FlipLockPswrdBrowser* browser, FlipLockPswrdBrowserMode mode);
 void fliplock_pswrd_browser_set_add_menu_type(
     FlipLockPswrdBrowser* browser,
@@ -80,6 +87,7 @@ void fliplock_pswrd_browser_add_item(
     uint8_t icon_id);
 void fliplock_pswrd_browser_set_selected_item(FlipLockPswrdBrowser* browser, uint32_t index);
 uint32_t fliplock_pswrd_browser_get_selected_item(const FlipLockPswrdBrowser* browser);
+char* fliplock_pswrd_browser_get_selected_label(const FlipLockPswrdBrowser* browser);
 void fliplock_pswrd_browser_set_action_selected(FlipLockPswrdBrowser* browser, uint32_t index);
 uint32_t fliplock_pswrd_browser_get_action_selected(const FlipLockPswrdBrowser* browser);
 void fliplock_pswrd_browser_set_action_menu_open(FlipLockPswrdBrowser* browser, bool is_open);

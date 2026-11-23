@@ -157,15 +157,16 @@ static void fliplock_pswrd_browser_draw_item_icon(
     const FlipLockPswrdBrowserItem* item,
     uint8_t x,
     uint8_t y) {
-    const uint8_t* xbm = fliplock_pswrd_browser_icon_needs_file(item) ?
-                             fliplock_pswrd_browser_cached_icon(model, item->icon_id) :
-                             NULL;
+    UNUSED(model);
+    // const uint8_t* xbm = fliplock_pswrd_browser_icon_needs_file(item) ?
+    //                          fliplock_pswrd_browser_cached_icon(model, item->icon_id) :
+    //                          NULL;
 
-    if(xbm) {
-        canvas_draw_xbm(
-            canvas, x, y, FLIPLOCK_PSWRD_BROWSER_ICON_SIZE, FLIPLOCK_PSWRD_BROWSER_ICON_SIZE, xbm);
-        return;
-    }
+    // if(xbm) {
+    //     canvas_draw_xbm(
+    //         canvas, x, y, FLIPLOCK_PSWRD_BROWSER_ICON_SIZE, FLIPLOCK_PSWRD_BROWSER_ICON_SIZE, xbm);
+    //     return;
+    // }
 
     switch(item->type) {
     case FlipLockPswrdBrowserItemFolder:
@@ -225,7 +226,7 @@ static void
                 &model->items[item_index],
                 FLIPLOCK_PSWRD_BROWSER_ICON_X,
                 (uint8_t)y);
-            label_x = FLIPLOCK_PSWRD_BROWSER_ICON_X;
+            label_x = FLIPLOCK_PSWRD_BROWSER_TEXT_X;
             label_width = show_scrollbar ? 103U : 108U;
         }
 
@@ -682,6 +683,18 @@ void fliplock_pswrd_browser_set_has_parent(FlipLockPswrdBrowser* browser, bool h
         true);
 }
 
+bool fliplock_pswrd_browser_get_has_parent(const FlipLockPswrdBrowser* browser) {
+    bool has_parent = false;
+
+    furi_check(browser);
+    with_view_model(
+        browser->view,
+        FlipLockPswrdBrowserModel * model,
+        { has_parent = model->has_parent; },
+        false);
+    return has_parent;
+}
+
 void fliplock_pswrd_browser_set_mode(FlipLockPswrdBrowser* browser, FlipLockPswrdBrowserMode mode) {
     furi_check(browser);
     with_view_model(
@@ -750,6 +763,22 @@ uint32_t fliplock_pswrd_browser_get_selected_item(const FlipLockPswrdBrowser* br
         { selected = model->selected_index; },
         false);
     return selected;
+}
+
+char* fliplock_pswrd_browser_get_selected_label(const FlipLockPswrdBrowser* browser) {
+    char* label = NULL;
+
+    furi_check(browser);
+    with_view_model(
+        browser->view,
+        FlipLockPswrdBrowserModel * model,
+        {
+            if(model->item_count > 0U && model->selected_index < model->item_count) {
+                label = model->items[model->selected_index].label;
+            }
+        },
+        false);
+    return label;
 }
 
 void fliplock_pswrd_browser_set_action_selected(FlipLockPswrdBrowser* browser, uint32_t index) {

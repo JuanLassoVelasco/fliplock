@@ -133,6 +133,10 @@ static App* app_alloc() {
     app->loading = loading_alloc();
     view_dispatcher_add_view(
         app->view_dispatcher, FlipLockModules_Loading, loading_get_view(app->loading));
+    app->storage = furi_record_open(RECORD_STORAGE);
+    app->storage_file = storage_file_alloc(app->storage);
+    app->root_path = strdup(APP_DATA_PATH(""));
+    app->current_display_path = strdup(app->root_path);
 
     return app;
 }
@@ -153,6 +157,10 @@ static void app_free(App* app) {
     dialog_ex_free(app->dialog);
     widget_free(app->widget);
     loading_free(app->loading);
+    storage_file_free(app->storage_file);
+    furi_record_close(RECORD_STORAGE);
+    free(app->root_path);
+    free(app->current_display_path);
     free(app);
 }
 
@@ -166,6 +174,8 @@ int32_t fliplock_app(void* p) {
     view_dispatcher_run(app->view_dispatcher);
 
     app_free(app);
+
+    furi_record_close(RECORD_GUI);
 
     return 0;
 }

@@ -477,7 +477,7 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
     const bool selected_add = fliplock_pswrd_browser_selected_is_add(model);
     const bool selected_actionable = fliplock_pswrd_browser_selected_is_actionable(model);
     const bool has_parent = model->has_parent;
-    const bool is_long_press = event->type == InputTypeLong;
+    const bool is_normal_press = event->type == InputTypePress;
     view_commit_model(browser->view, false);
 
     if(event->key == InputKeyOk && selected_actionable && !action_menu_open) {
@@ -495,13 +495,13 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
 
     if(action_menu_open) {
         FURI_LOG_D("PSWRD_Browser", "Action menu accessed an input entered");
-        if(event->key == InputKeyOk && is_long_press) {
+        if(event->key == InputKeyOk && is_normal_press) {
             FURI_LOG_D("PSWRD_Browser", "Attempting to emit action selection event");
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventSelectAction);
             return true;
         }
 
-        if(event->key == InputKeyBack && is_long_press) {
+        if(event->key == InputKeyBack && is_normal_press) {
             with_view_model(
                 browser->view,
                 FlipLockPswrdBrowserModel * mutable_model,
@@ -521,13 +521,13 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
 
     switch(event->key) {
     case InputKeyLeft:
-        if(is_long_press && has_parent) {
+        if(is_normal_press && has_parent) {
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventBack);
             consumed = true;
         }
         break;
     case InputKeyOk:
-        if(is_long_press &&
+        if(is_normal_press &&
            (selected_add || selected_password || selected_folder || selected_up)) {
             FURI_LOG_D("PSWRD_Browser", "Normal enter input event sent");
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventEnter);
@@ -535,7 +535,7 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
         }
         break;
     case InputKeyRight:
-        if(!is_long_press) {
+        if(!is_normal_press) {
             break;
         }
         if(selected_folder) {
@@ -552,7 +552,7 @@ static bool fliplock_pswrd_browser_input_callback(InputEvent* event, void* conte
         }
         break;
     case InputKeyBack:
-        if(is_long_press && has_parent) {
+        if(is_normal_press && has_parent) {
             fliplock_pswrd_browser_emit(browser, FlipLockPswrdBrowserEventBack);
             consumed = true;
         }

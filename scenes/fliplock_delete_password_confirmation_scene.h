@@ -1,0 +1,17 @@
+#pragma once
+
+#include "fliplock.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void fliplock_delete_password_confirmation_on_enter(void* context);
+bool fliplock_delete_password_confirmation_on_event(
+    void* context,
+    SceneManagerEvent event);
+void fliplock_delete_password_confirmation_on_exit(void* context);
+
+#ifdef __cplusplus
+}
+#endif

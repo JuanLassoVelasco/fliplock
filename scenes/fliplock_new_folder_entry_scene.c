@@ -80,6 +80,7 @@ void fliplock_new_folder_entry_on_exit(void* context) {
 
     if(app->new_folder_label_buffer) {
         free(app->new_folder_label_buffer);
+        app->new_password_label_buffer = NULL;
     }
     text_input_reset(app->text_input);
 }

@@ -18,6 +18,7 @@
 #include "scenes/fliplock_password_injection_scene.h"
 #include "scenes/fliplock_injection_progress_scene.h"
 #include "scenes/fliplock_injection_complete_scene.h"
+#include "scenes/fliplock_delete_password_confirmation_scene.h"
 
 const char* fliplock_item_label_offset_string = "        ";
 
@@ -33,6 +34,7 @@ void (*const fliplock_scene_on_enter_handlers[])(void*) = {
     fliplock_password_generation_on_enter,
     fliplock_password_info_on_enter,
     fliplock_delete_confirmation_on_enter,
+    fliplock_delete_password_confirmation_on_enter,
     fliplock_username_generation_confirmation_on_enter,
     fliplock_password_generation_confirmation_on_enter,
     fliplock_username_generation_result_on_enter,
@@ -54,6 +56,7 @@ bool (*const fliplock_scene_on_event_handlers[])(void*, SceneManagerEvent) =
      fliplock_password_generation_on_event,
      fliplock_password_info_on_event,
      fliplock_delete_confirmation_on_event,
+     fliplock_delete_password_confirmation_on_event,
      fliplock_username_generation_confirmation_on_event,
      fliplock_password_generation_confirmation_on_event,
      fliplock_username_generation_result_on_event,
@@ -75,6 +78,7 @@ void (*const fliplock_scene_on_exit_handlers[])(void*) = {
     fliplock_password_generation_on_exit,
     fliplock_password_info_on_exit,
     fliplock_delete_confirmation_on_exit,
+    fliplock_delete_password_confirmation_on_exit,
     fliplock_username_generation_confirmation_on_exit,
     fliplock_password_generation_confirmation_on_exit,
     fliplock_username_generation_result_on_exit,
@@ -109,7 +113,6 @@ static App* app_alloc() {
     app->scene_manager =
         scene_manager_alloc(&fliplock_scene_manager_handlers, app);
     app->view_dispatcher = view_dispatcher_alloc();
-    view_dispatcher_enable_queue(app->view_dispatcher);
     view_dispatcher_set_event_callback_context(app->view_dispatcher, app);
     view_dispatcher_set_custom_event_callback(
         app->view_dispatcher, fliplock_custom_callback);

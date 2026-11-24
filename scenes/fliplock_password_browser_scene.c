@@ -54,21 +54,23 @@ void fliplock_password_browser_scene_callback(
             switch(action_selected) {
             case FlipLockPswrdBrowserActionEdit:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPswrdBrowserEventOpenEdit);
+                    app->scene_manager,
+                    FlipLockPasswordBrowserEventEditPasswordRequest);
                 break;
             case FlipLockPswrdBrowserActionInject:
                 scene_manager_handle_custom_event(
                     app->scene_manager,
-                    FlipLockPswrdBrowserEventOpenInject);
+                    FlipLockPasswordBrowserEventInjectPasswordRequest);
                 break;
             case FlipLockPswrdBrowserActionView:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPswrdBrowserEventOpenView);
+                    app->scene_manager,
+                    FlipLockPasswordBrowserEventViewPasswordRequest);
                 break;
             case FlipLockPswrdBrowserActionDelete:
                 scene_manager_handle_custom_event(
                     app->scene_manager,
-                    FlipLockPswrdBrowserEventOpenDelete);
+                    FlipLockPasswordBrowserEventDeletePasswordRequest);
                 break;
             default:
                 break;
@@ -282,7 +284,7 @@ bool fliplock_password_browser_on_event(
                 app->scene_manager, FlipLockScene_PasswordEntry);
             consumed = true;
             break;
-        case FlipLockPswrdBrowserEventOpenEdit:
+        case FlipLockPasswordBrowserEventEditPasswordRequest:
             FURI_LOG_D(
                 FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
                 "Open Edit Request made");
@@ -291,28 +293,42 @@ bool fliplock_password_browser_on_event(
                 app->scene_manager, FlipLockScene_PasswordEdit);
             consumed = true;
             break;
-        case FlipLockPswrdBrowserEventOpenInject:
+        case FlipLockPasswordBrowserEventInjectPasswordRequest:
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Open Inject request made");
             app->current_password_label = strdup(selected_label);
             scene_manager_next_scene(
                 app->scene_manager, FlipLockScene_PasswordInjection);
             consumed = true;
             break;
-        case FlipLockPswrdBrowserEventOpenView:
+        case FlipLockPasswordBrowserEventViewPasswordRequest:
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Open View request made");
             app->current_password_label = strdup(selected_label);
             scene_manager_next_scene(
                 app->scene_manager, FlipLockScene_PasswordInfo);
             consumed = true;
             break;
-        case FlipLockPswrdBrowserEventOpenDelete:
+        case FlipLockPasswordBrowserEventDeletePasswordRequest:
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Open Delete request made");
             app->current_password_label = strdup(selected_label);
             scene_manager_next_scene(
-                app->scene_manager, FlipLockScene_DeleteConfirmation);
+                app->scene_manager,
+                FlipLockScene_DeleteFolderConfirmation);
             consumed = true;
             break;
         case FlipLockPasswordBrowserEventDeleteFolderRequest:
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Open Delete request made");
             app->folder_delete_label_buffer = strdup(selected_label);
             scene_manager_next_scene(
-                app->scene_manager, FlipLockScene_DeleteConfirmation);
+                app->scene_manager,
+                FlipLockScene_DeleteFolderConfirmation);
             consumed = true;
             break;
         default:

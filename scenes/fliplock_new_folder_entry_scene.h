@@ -6,9 +6,12 @@
 extern "C" {
 #endif
 
+#define FLIPLOCK_NEW_FOLDER_ENTRY_SCENE_FLAG "New_Folder_entry"
+
 typedef enum {
     FlipLockNewFolderEntryEventSubmitName = 0,
     FlipLockNewFolderEntryEventCancel,
+    FlipLockNewFolderEntryEventReturnToBrowser,
     FlipLockNewFolderEntryEventCount,
 } FlipLockNewFolderEntryEvent;
 

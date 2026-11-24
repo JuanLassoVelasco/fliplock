@@ -8,6 +8,7 @@
 extern "C" {
 #endif
 
+#define FLIPLOCK_PASSWORD_BROWSER_MODULE_FLAG "PSWRD_BROWSER_MODULE"
 #define FLIPLOCK_PASSWORD_BROWSER_MAX_ITEMS   48U
 #define FLIPLOCK_PASSWORD_BROWSER_LABEL_SIZE  64U
 #define FLIPLOCK_PASSWORD_BROWSER_HEADER_SIZE 96U
@@ -63,7 +64,9 @@ typedef enum {
     FlipLockPswrdBrowserEventCloseActionMenu,
 } FlipLockPswrdBrowserEvent;
 
-typedef void (*FlipLockPswrdBrowserCallback)(FlipLockPswrdBrowserEvent event, void* context);
+typedef void (*FlipLockPswrdBrowserCallback)(
+    FlipLockPswrdBrowserEvent event,
+    void* context);
 typedef bool (*FlipLockPswrdBrowserBackFilter)(void* context);
 
 typedef struct FlipLockPswrdBrowser FlipLockPswrdBrowser;
@@ -79,10 +82,17 @@ void fliplock_pswrd_browser_set_back_filter(
     FlipLockPswrdBrowser* browser,
     FlipLockPswrdBrowserBackFilter back_filter);
 void fliplock_pswrd_browser_reset(FlipLockPswrdBrowser* browser);
-void fliplock_pswrd_browser_set_header(FlipLockPswrdBrowser* browser, const char* header);
-void fliplock_pswrd_browser_set_has_parent(FlipLockPswrdBrowser* browser, bool has_parent);
-bool fliplock_pswrd_browser_get_has_parent(const FlipLockPswrdBrowser* browser);
-void fliplock_pswrd_browser_set_mode(FlipLockPswrdBrowser* browser, FlipLockPswrdBrowserMode mode);
+void fliplock_pswrd_browser_set_header(
+    FlipLockPswrdBrowser* browser,
+    const char* header);
+void fliplock_pswrd_browser_set_has_parent(
+    FlipLockPswrdBrowser* browser,
+    bool has_parent);
+bool fliplock_pswrd_browser_get_has_parent(
+    const FlipLockPswrdBrowser* browser);
+void fliplock_pswrd_browser_set_mode(
+    FlipLockPswrdBrowser* browser,
+    FlipLockPswrdBrowserMode mode);
 void fliplock_pswrd_browser_set_add_menu_type(
     FlipLockPswrdBrowser* browser,
     FlipLockPswrdBrowserMenuType add_menu_type);
@@ -91,15 +101,25 @@ void fliplock_pswrd_browser_add_item(
     FlipLockPswrdBrowserItemType type,
     const char* label,
     uint8_t icon_id);
-void fliplock_pswrd_browser_set_selected_item(FlipLockPswrdBrowser* browser, uint32_t index);
-uint32_t fliplock_pswrd_browser_get_selected_item(const FlipLockPswrdBrowser* browser);
-char* fliplock_pswrd_browser_get_selected_label(const FlipLockPswrdBrowser* browser);
-void fliplock_pswrd_browser_set_action_selected(FlipLockPswrdBrowser* browser, uint32_t index);
-uint32_t fliplock_pswrd_browser_get_action_selected(const FlipLockPswrdBrowser* browser);
-void fliplock_pswrd_browser_set_action_menu_open(FlipLockPswrdBrowser* browser, bool is_open);
-bool fliplock_pswrd_browser_is_action_menu_open(const FlipLockPswrdBrowser* browser);
-FlipLockPswrdBrowserItemType
-    fliplock_pswrd_browser_get_selected_type(const FlipLockPswrdBrowser* browser);
+void fliplock_pswrd_browser_set_selected_item(
+    FlipLockPswrdBrowser* browser,
+    uint32_t index);
+uint32_t fliplock_pswrd_browser_get_selected_item(
+    const FlipLockPswrdBrowser* browser);
+char* fliplock_pswrd_browser_get_selected_label(
+    const FlipLockPswrdBrowser* browser);
+void fliplock_pswrd_browser_set_action_selected(
+    FlipLockPswrdBrowser* browser,
+    uint32_t index);
+uint32_t fliplock_pswrd_browser_get_action_selected(
+    const FlipLockPswrdBrowser* browser);
+void fliplock_pswrd_browser_set_action_menu_open(
+    FlipLockPswrdBrowser* browser,
+    bool is_open);
+bool fliplock_pswrd_browser_is_action_menu_open(
+    const FlipLockPswrdBrowser* browser);
+FlipLockPswrdBrowserItemType fliplock_pswrd_browser_get_selected_type(
+    const FlipLockPswrdBrowser* browser);
 
 #ifdef __cplusplus
 }

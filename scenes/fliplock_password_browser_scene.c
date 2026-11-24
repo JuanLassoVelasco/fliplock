@@ -2,39 +2,52 @@
 
 #define FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG "PSWRD_BROWSER_SCENE"
 
-void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, void* context) {
+void fliplock_password_browser_scene_callback(
+    FlipLockPswrdBrowserEvent event,
+    void* context) {
     App* app = context;
     FlipLockPswrdBrowserItemType selected_type =
         fliplock_pswrd_browser_get_selected_type(app->password_browser);
-    uint32_t action_selected = fliplock_pswrd_browser_get_action_selected(app->password_browser);
+    uint32_t action_selected =
+        fliplock_pswrd_browser_get_action_selected(app->password_browser);
     FURI_LOG_D(FLIPLOCK_DEBUG_LOG_TAG, "Processing brower event");
-    FURI_LOG_D(FLIPLOCK_DEBUG_LOG_TAG, "Action Selected: %ld", action_selected);
+    FURI_LOG_D(
+        FLIPLOCK_DEBUG_LOG_TAG, "Action Selected: %ld", action_selected);
     FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Event Id: %d", event);
 
     switch(event) {
     case FlipLockPswrdBrowserEventEnter:
-        FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Enter event called");
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Enter event called");
         if(selected_type == FlipLockPswrdBrowserItemUp) {
             scene_manager_handle_custom_event(
-                app->scene_manager, FlipLockPasswordBrowserEventGoUpFolder);
+                app->scene_manager,
+                FlipLockPasswordBrowserEventGoUpFolder);
             break;
         }
         break;
     case FlipLockPswrdBrowserEventBack:
-        FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Back event called");
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Back event called");
         if(!app->at_root_path &&
-           !fliplock_pswrd_browser_is_action_menu_open(app->password_browser)) {
+           !fliplock_pswrd_browser_is_action_menu_open(
+               app->password_browser)) {
             scene_manager_handle_custom_event(
-                app->scene_manager, FlipLockPasswordBrowserEventGoUpFolder);
+                app->scene_manager,
+                FlipLockPasswordBrowserEventGoUpFolder);
             break;
         }
         break;
     case FlipLockPswrdBrowserEventOpenActionMenu:
-        FURI_LOG_D(FLIPLOCK_DEBUG_LOG_TAG, "Open Action menu event called");
+        FURI_LOG_D(
+            FLIPLOCK_DEBUG_LOG_TAG, "Open Action menu event called");
         break;
     case FlipLockPswrdBrowserEventSelectAction:
-        FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Select action event called");
-        if(!fliplock_pswrd_browser_is_action_menu_open(app->password_browser)) {
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+            "Select action event called");
+        if(!fliplock_pswrd_browser_is_action_menu_open(
+               app->password_browser)) {
             break;
         }
         if(selected_type == FlipLockPswrdBrowserItemPassword) {
@@ -45,7 +58,8 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
                 break;
             case FlipLockPswrdBrowserActionInject:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPswrdBrowserEventOpenInject);
+                    app->scene_manager,
+                    FlipLockPswrdBrowserEventOpenInject);
                 break;
             case FlipLockPswrdBrowserActionView:
                 scene_manager_handle_custom_event(
@@ -53,7 +67,8 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
                 break;
             case FlipLockPswrdBrowserActionDelete:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPswrdBrowserEventOpenDelete);
+                    app->scene_manager,
+                    FlipLockPswrdBrowserEventOpenDelete);
                 break;
             default:
                 break;
@@ -63,11 +78,13 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
             switch(action_selected) {
             case FlipLockPswrdBrowserCreateFolder:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPasswordBrowserEventCreateFolderRequest);
+                    app->scene_manager,
+                    FlipLockPasswordBrowserEventCreateFolderRequest);
                 break;
             case FlipLockPswrdBrowserCreatePassword:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPasswordBrowserEventCreatePasswordRequest);
+                    app->scene_manager,
+                    FlipLockPasswordBrowserEventCreatePasswordRequest);
                 break;
             default:
                 break;
@@ -77,11 +94,13 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
             switch(action_selected) {
             case FlipLockPswrdBrowserFolderActionOpen:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPasswordBrowserEventEnterFolder);
+                    app->scene_manager,
+                    FlipLockPasswordBrowserEventEnterFolder);
                 break;
             case FlipLockPswrdBrowserFolderActionDelete:
                 scene_manager_handle_custom_event(
-                    app->scene_manager, FlipLockPasswordBrowserEventDeleteFolderRequest);
+                    app->scene_manager,
+                    FlipLockPasswordBrowserEventDeleteFolderRequest);
                 break;
             default:
                 break;
@@ -90,7 +109,9 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
         }
         break;
     case FlipLockPswrdBrowserEventCloseActionMenu:
-        FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Close action menu event called");
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+            "Close action menu event called");
         app->action_menu_just_closed = true;
         break;
     default:
@@ -100,9 +121,25 @@ void fliplock_password_browser_scene_callback(FlipLockPswrdBrowserEvent event, v
 
 void fliplock_password_browser_load_contents(void* context) {
     App* app = context;
-    FURI_LOG_D(FLIPLOCK_DEBUG_LOG_TAG, "Loaded password browser contents");
-    if(!storage_dir_open(app->storage_file, furi_string_get_cstr(app->current_display_path))) {
+    FURI_LOG_D(
+        FLIPLOCK_DEBUG_LOG_TAG, "Loading password browser contents");
+    if(!storage_dir_exists(
+           app->storage,
+           furi_string_get_cstr(app->current_display_path))) {
+        FURI_LOG_E(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+            "Dir path does not exist: %s",
+            furi_string_get_cstr(app->current_display_path));
+        return;
+    }
+    if(!storage_dir_open(
+           app->storage_file,
+           furi_string_get_cstr(app->current_display_path))) {
         // Handle error opening directory
+        FURI_LOG_E(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+            "Failed to open %s",
+            furi_string_get_cstr(app->current_display_path));
         storage_dir_close(app->storage_file);
         return;
     }
@@ -110,7 +147,12 @@ void fliplock_password_browser_load_contents(void* context) {
     FileInfo* file_info = malloc(sizeof(FileInfo));
     char* entry_name = malloc(FLIPLOCK_PASSWORD_BROWSER_LABEL_SIZE);
     while(storage_dir_read(
-        app->storage_file, file_info, entry_name, FLIPLOCK_PASSWORD_BROWSER_LABEL_SIZE)) {
+        app->storage_file,
+        file_info,
+        entry_name,
+        FLIPLOCK_PASSWORD_BROWSER_LABEL_SIZE)) {
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "loading %s", entry_name);
         if(file_info_is_dir(file_info)) {
             fliplock_pswrd_browser_add_item(
                 app->password_browser,
@@ -136,8 +178,15 @@ void fliplock_password_browser_on_enter(void* context) {
     FURI_LOG_D(FLIPLOCK_DEBUG_LOG_TAG, "Entered password browser scene");
     fliplock_pswrd_browser_reset(app->password_browser);
     fliplock_pswrd_browser_set_callback(
-        app->password_browser, fliplock_password_browser_scene_callback, context);
-    if(fliplock_pswrd_browser_get_has_parent(app->password_browser)) {
+        app->password_browser,
+        fliplock_password_browser_scene_callback,
+        context);
+
+    FURI_LOG_D(
+        FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+        "Has parent: %b",
+        fliplock_pswrd_browser_get_has_parent(app->password_browser));
+    if(!app->at_root_path) {
         fliplock_pswrd_browser_add_item(
             app->password_browser,
             FlipLockPswrdBrowserItemUp,
@@ -146,10 +195,12 @@ void fliplock_password_browser_on_enter(void* context) {
     }
     fliplock_password_browser_load_contents(app);
     if(furi_string_equal(app->current_display_path, app->root_path)) {
-        fliplock_pswrd_browser_set_header(app->password_browser, "Password Library");
+        fliplock_pswrd_browser_set_header(
+            app->password_browser, "Password Library");
     } else {
         fliplock_pswrd_browser_set_header(
-            app->password_browser, furi_string_get_cstr(app->current_display_path));
+            app->password_browser,
+            furi_string_get_cstr(app->current_display_path));
     }
     fliplock_pswrd_browser_add_item(
         app->password_browser,
@@ -157,19 +208,24 @@ void fliplock_password_browser_on_enter(void* context) {
         "Add",
         FLIPLOCK_PSWRD_BROWSER_ICON_NONE);
 
-    view_dispatcher_switch_to_view(app->view_dispatcher, FlipLockModules_PasswordBrowser);
+    view_dispatcher_switch_to_view(
+        app->view_dispatcher, FlipLockModules_PasswordBrowser);
 }
 
-bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) {
+bool fliplock_password_browser_on_event(
+    void* context,
+    SceneManagerEvent event) {
     App* app = context;
     bool consumed = false;
     FuriString* new_display_path = NULL;
     FuriString* upper_directory_path = NULL;
-    char* selected_label = fliplock_pswrd_browser_get_selected_label(app->password_browser);
+    char* selected_label =
+        fliplock_pswrd_browser_get_selected_label(app->password_browser);
 
     switch(event.type) {
     case SceneManagerEventTypeBack:
-        if(fliplock_pswrd_browser_is_action_menu_open(app->password_browser)) {
+        if(fliplock_pswrd_browser_is_action_menu_open(
+               app->password_browser)) {
             consumed = true;
         }
         if(app->action_menu_just_closed) {
@@ -183,8 +239,10 @@ bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) 
             new_display_path = furi_string_alloc();
             furi_string_cat(new_display_path, app->current_display_path);
             path_append(new_display_path, selected_label);
-            app->current_display_path = new_display_path;
-            fliplock_pswrd_browser_set_has_parent(app->password_browser, true);
+            furi_string_set(app->current_display_path, new_display_path);
+            fliplock_pswrd_browser_set_has_parent(
+                app->password_browser, true);
+            app->at_root_path = false;
             fliplock_password_browser_on_enter(context);
             consumed = true;
             break;
@@ -195,49 +253,66 @@ bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) 
             }
             upper_directory_path = furi_string_alloc();
             path_extract_dirname(
-                furi_string_get_cstr(app->current_display_path), upper_directory_path);
-            app->current_display_path = upper_directory_path;
-            if(furi_string_equal(app->current_display_path, app->root_path)) {
-                fliplock_pswrd_browser_set_has_parent(app->password_browser, false);
+                furi_string_get_cstr(app->current_display_path),
+                upper_directory_path);
+            furi_string_set(
+                app->current_display_path, upper_directory_path);
+            if(furi_string_equal(
+                   app->current_display_path, app->root_path)) {
+                fliplock_pswrd_browser_set_has_parent(
+                    app->password_browser, false);
                 app->at_root_path = true;
             }
             fliplock_password_browser_on_enter(context);
             consumed = true;
             break;
         case FlipLockPasswordBrowserEventCreateFolderRequest:
-            FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Create Folder request made");
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_NewFolderEntry);
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Create Folder request made");
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_NewFolderEntry);
             consumed = true;
             break;
         case FlipLockPasswordBrowserEventCreatePasswordRequest:
-            FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Create password request made");
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_PasswordEntry);
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Create password request made");
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_PasswordEntry);
             consumed = true;
             break;
         case FlipLockPswrdBrowserEventOpenEdit:
-            FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Open Edit Request made");
+            FURI_LOG_D(
+                FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+                "Open Edit Request made");
             app->current_password_label = strdup(selected_label);
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_PasswordEdit);
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_PasswordEdit);
             consumed = true;
             break;
         case FlipLockPswrdBrowserEventOpenInject:
             app->current_password_label = strdup(selected_label);
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_PasswordInjection);
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_PasswordInjection);
             consumed = true;
             break;
         case FlipLockPswrdBrowserEventOpenView:
             app->current_password_label = strdup(selected_label);
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_PasswordInfo);
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_PasswordInfo);
             consumed = true;
             break;
         case FlipLockPswrdBrowserEventOpenDelete:
             app->current_password_label = strdup(selected_label);
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_DeleteConfirmation);
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_DeleteConfirmation);
             consumed = true;
             break;
         case FlipLockPasswordBrowserEventDeleteFolderRequest:
             app->folder_delete_label_buffer = strdup(selected_label);
-            scene_manager_next_scene(app->scene_manager, FlipLockScene_DeleteConfirmation);
+            scene_manager_next_scene(
+                app->scene_manager, FlipLockScene_DeleteConfirmation);
             consumed = true;
             break;
         default:
@@ -259,7 +334,9 @@ bool fliplock_password_browser_on_event(void* context, SceneManagerEvent event) 
 }
 
 void fliplock_password_browser_on_exit(void* context) {
-    FURI_LOG_D(FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Leaving password browser scene");
+    FURI_LOG_D(
+        FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG,
+        "Leaving password browser scene");
     App* app = context;
     fliplock_pswrd_browser_reset(app->password_browser);
 }

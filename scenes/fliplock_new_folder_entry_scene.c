@@ -62,7 +62,7 @@ bool fliplock_new_folder_entry_on_event(
     case SceneManagerEventTypeCustom:
         switch(event.event) {
         case FlipLockNewFolderEntryEventReturnToBrowser:
-            scene_manager_next_scene(
+            scene_manager_search_and_switch_to_previous_scene(
                 app->scene_manager, FlipLockScene_PasswordBrowser);
         default:
             break;

@@ -645,21 +645,25 @@ static bool fliplock_pswrd_browser_input_callback(
         "Event Key: %d",
         event->key);
 
+    if(!is_normal_press) {
+        return false;
+    }
+
     switch(event->key) {
     case InputKeyLeft:
         FURI_LOG_D(
             FLIPLOCK_PASSWORD_BROWSER_MODULE_FLAG,
             "Has parent: %b",
             has_parent);
-        if(is_normal_press && has_parent) {
+        if(has_parent) {
             fliplock_pswrd_browser_emit(
                 browser, FlipLockPswrdBrowserEventBack);
             consumed = true;
         }
         break;
     case InputKeyOk:
-        if(is_normal_press && (selected_add || selected_password ||
-                               selected_folder || selected_up)) {
+        if((selected_add || selected_password || selected_folder ||
+            selected_up)) {
             FURI_LOG_D("PSWRD_Browser", "Normal enter input event sent");
             fliplock_pswrd_browser_emit(
                 browser, FlipLockPswrdBrowserEventEnter);
@@ -667,14 +671,17 @@ static bool fliplock_pswrd_browser_input_callback(
         }
         break;
     case InputKeyRight:
-        if(!is_normal_press) {
-            break;
-        }
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_MODULE_FLAG, "Input Key Right");
+        FURI_LOG_D(
+            FLIPLOCK_PASSWORD_BROWSER_MODULE_FLAG,
+            "Is folder: %b",
+            selected_folder);
         if(selected_folder) {
             fliplock_pswrd_browser_emit(
                 browser, FlipLockPswrdBrowserEventEnter);
             consumed = true;
-        } else if(selected_password) {
+        } else if(selected_password || selected_add) {
             with_view_model(
                 browser->view,
                 FlipLockPswrdBrowserModel * mutable_model,
@@ -686,7 +693,7 @@ static bool fliplock_pswrd_browser_input_callback(
         }
         break;
     case InputKeyBack:
-        if(is_normal_press && has_parent) {
+        if(has_parent) {
             fliplock_pswrd_browser_emit(
                 browser, FlipLockPswrdBrowserEventBack);
             consumed = true;

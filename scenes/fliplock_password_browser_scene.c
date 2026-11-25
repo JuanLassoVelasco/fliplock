@@ -19,10 +19,18 @@ void fliplock_password_browser_scene_callback(
     case FlipLockPswrdBrowserEventEnter:
         FURI_LOG_D(
             FLIPLOCK_PASSWORD_BROWSER_SCENE_TAG, "Enter event called");
-        if(selected_type == FlipLockPswrdBrowserItemUp) {
+        switch(selected_type) {
+        case FlipLockPswrdBrowserItemUp:
             scene_manager_handle_custom_event(
                 app->scene_manager,
                 FlipLockPasswordBrowserEventGoUpFolder);
+            break;
+        case FlipLockPswrdBrowserItemFolder:
+            scene_manager_handle_custom_event(
+                app->scene_manager,
+                FlipLockPasswordBrowserEventEnterFolder);
+            break;
+        default:
             break;
         }
         break;
@@ -179,6 +187,10 @@ void fliplock_password_browser_on_enter(void* context) {
     App* app = context;
     FURI_LOG_D(FLIPLOCK_DEBUG_LOG_TAG, "Entered password browser scene");
     fliplock_pswrd_browser_reset(app->password_browser);
+    fliplock_pswrd_browser_set_has_parent(
+        app->password_browser,
+        furi_string_cmp(app->current_display_path, app->root_path));
+
     fliplock_pswrd_browser_set_callback(
         app->password_browser,
         fliplock_password_browser_scene_callback,
@@ -242,8 +254,6 @@ bool fliplock_password_browser_on_event(
             furi_string_cat(new_display_path, app->current_display_path);
             path_append(new_display_path, selected_label);
             furi_string_set(app->current_display_path, new_display_path);
-            fliplock_pswrd_browser_set_has_parent(
-                app->password_browser, true);
             app->at_root_path = false;
             fliplock_password_browser_on_enter(context);
             consumed = true;
@@ -261,8 +271,6 @@ bool fliplock_password_browser_on_event(
                 app->current_display_path, upper_directory_path);
             if(furi_string_equal(
                    app->current_display_path, app->root_path)) {
-                fliplock_pswrd_browser_set_has_parent(
-                    app->password_browser, false);
                 app->at_root_path = true;
             }
             fliplock_password_browser_on_enter(context);
@@ -318,7 +326,7 @@ bool fliplock_password_browser_on_event(
             app->current_password_label = strdup(selected_label);
             scene_manager_next_scene(
                 app->scene_manager,
-                FlipLockScene_DeleteFolderConfirmation);
+                FlipLockScene_DeletePasswordConfirmation);
             consumed = true;
             break;
         case FlipLockPasswordBrowserEventDeleteFolderRequest:

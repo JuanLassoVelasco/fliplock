@@ -34,6 +34,7 @@ typedef enum {
     FlipLockScene_NewFolderEntry,
     FlipLockScene_PasswordEntry,
     FlipLockScene_PasswordEdit,
+    FlipLockScene_PasswordNameEntry,
     FlipLockScene_EnterUsername,
     FlipLockScene_EnterPassword,
     FlipLockScene_UsernameGeneration,

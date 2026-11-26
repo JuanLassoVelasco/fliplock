@@ -19,6 +19,7 @@
 #include "scenes/fliplock_injection_progress_scene.h"
 #include "scenes/fliplock_injection_complete_scene.h"
 #include "scenes/fliplock_delete_password_confirmation_scene.h"
+#include "scenes/fliplock_password_name_entry.h"
 
 const char* fliplock_item_label_offset_string = "        ";
 
@@ -28,6 +29,7 @@ void (*const fliplock_scene_on_enter_handlers[])(void*) = {
     fliplock_new_folder_entry_on_enter,
     fliplock_password_entry_on_enter,
     fliplock_password_edit_on_enter,
+    fliplock_password_name_entry_on_enter,
     fliplock_enter_username_on_enter,
     fliplock_enter_password_on_enter,
     fliplock_username_generation_on_enter,
@@ -50,6 +52,7 @@ bool (*const fliplock_scene_on_event_handlers[])(void*, SceneManagerEvent) =
      fliplock_new_folder_entry_on_event,
      fliplock_password_entry_on_event,
      fliplock_password_edit_on_event,
+     fliplock_password_name_entry_on_event,
      fliplock_enter_username_on_event,
      fliplock_enter_password_on_event,
      fliplock_username_generation_on_event,
@@ -72,6 +75,7 @@ void (*const fliplock_scene_on_exit_handlers[])(void*) = {
     fliplock_new_folder_entry_on_exit,
     fliplock_password_entry_on_exit,
     fliplock_password_edit_on_exit,
+    fliplock_password_name_entry_on_exit,
     fliplock_enter_username_on_exit,
     fliplock_enter_password_on_exit,
     fliplock_username_generation_on_exit,
